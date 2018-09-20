@@ -10,8 +10,8 @@ public class HookArm extends OpMode {
 
     DcMotor upperleftMotor;
 
-
     public void init() {
+
         upperleftMotor = hardwareMap.dcMotor.get("Upper leftMotor");
 
         upperleftMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -19,9 +19,22 @@ public class HookArm extends OpMode {
     }
 
     public void loop() {
-        upperleftMotor.setPower(gamepad1.left_stick_y);
 
-        telemetry.addData("Left_stick_x:", gamepad1.left_stick_x);
+        double power = 0.35;
+
+        if (gamepad1.a){
+            upperleftMotor.setPower(power);
+        }
+        else if (gamepad1.b){
+            upperleftMotor.setPower(-1 * power);
+        }
+        else{
+            upperleftMotor.setPower(0);
+        }
+
+        //upperleftMotor.setPower(gamepad1.left_stick_y);
+
+        //telemetry.addData("Left_stick_x:", gamepad1.left_stick_x);
 
     }
 
