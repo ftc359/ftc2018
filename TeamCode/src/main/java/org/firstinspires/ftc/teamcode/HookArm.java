@@ -20,7 +20,7 @@ public class HookArm extends OpMode {
 
     public void loop() {
 
-        double power = 0.35;
+        double power = 0.3;
 
         if (gamepad1.a){
             upperleftMotor.setPower(power);
