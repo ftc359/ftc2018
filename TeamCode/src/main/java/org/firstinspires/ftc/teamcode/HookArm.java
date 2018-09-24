@@ -10,7 +10,8 @@ public class HookArm extends OpMode {
 
     DcMotor upperleftMotor;
 
-    double power = 0.35;
+    double power = 1.0;
+    int target = 0;
 
     public void init() {
 
@@ -23,13 +24,35 @@ public class HookArm extends OpMode {
 
     public void loop() {
 
-        double displacement
+        if (gamepad1.a) {
+            target = target + 50;
+            while (gamepad1.a){
 
+            }
+        }
+        else if (gamepad1.b) {
+            target = target - 50;
+            while (gamepad1.b){
 
+            }
+        }
 
+        if (target < 0){
+            target = 0;
+        }
+        else if (target > 300){
+            target = 300;
+        }
 
+        upperleftMotor.setTargetPosition(target);
+        if (upperleftMotor.getCurrentPosition()!=target) {
+            upperleftMotor.setPower(power);
+        }
 
+        while (upperleftMotor.isBusy()){
 
+        }
+        upperleftMotor.setPower(0);
 
         /**
         if (gamepad1.a) {
@@ -50,9 +73,6 @@ public class HookArm extends OpMode {
 
         **/
 
-
-
-
         /**
         double power = 0.3;
 
@@ -66,8 +86,6 @@ public class HookArm extends OpMode {
             upperleftMotor.setPower(0);
         }
 
-
-
         }
 
         //upperleftMotor.setPower(gamepad1.left_stick_y);
@@ -77,8 +95,6 @@ public class HookArm extends OpMode {
         **/
 
     }
-
-
 
 }
 
