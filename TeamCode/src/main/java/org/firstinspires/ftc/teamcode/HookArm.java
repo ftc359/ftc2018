@@ -4,20 +4,22 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-
 @TeleOp
+
 public class HookArm extends OpMode {
 
     DcMotor upperleftMotor;
 
     double power = 1.0;
     int target = 0;
+    double motorPower = power;
 
     public void init() {
 
         upperleftMotor = hardwareMap.dcMotor.get("Upper leftMotor");
 
         upperleftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        upperleftMotor.setDirection(DcMotor.Direction.REVERSE);
         upperleftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }
@@ -25,13 +27,13 @@ public class HookArm extends OpMode {
     public void loop() {
 
         if (gamepad1.a) {
-            target = target + 50;
+            target = target + 200;
             while (gamepad1.a){
 
             }
         }
         else if (gamepad1.b) {
-            target = target - 50;
+            target = target - 200;
             while (gamepad1.b){
 
             }
@@ -40,13 +42,23 @@ public class HookArm extends OpMode {
         if (target < 0){
             target = 0;
         }
-        else if (target > 300){
-            target = 300;
+        else if (target > 1500){
+            target = 1500;
+        }
+
+        //power = power * Math.min(Math.abs(upperleftMotor.getCurrentPosition()-target),200)/200;
+
+        if (Math.abs(target - upperleftMotor.getCurrentPosition()) > 100) {
+            motorPower = power;
+        }
+        else {
+            motorPower = power * Math.pow(1 - Math.pow(Math.abs(target - upperleftMotor.getCurrentPosition()) - 100, 2) / Math.pow(100,2), 0.5));
         }
 
         upperleftMotor.setTargetPosition(target);
+
         if (upperleftMotor.getCurrentPosition()!=target) {
-            upperleftMotor.setPower(power);
+            upperleftMotor.setPower(motorPower);
         }
 
         while (upperleftMotor.isBusy()){
