@@ -3,110 +3,99 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
 
-public class HookArm extends OpMode {
+public class HookArm extends OpMode{
 
-    DcMotor upperleftMotor;
+    private DcMotor hookArmMotor;
 
-    double power = 1.0;
-    int target = 0;
-    double motorPower = power;
+    private double power = 0.25;
+    private int target = 0;
+    private double runPower = power;
+    private int diff = 0;
+//define your stuff, as usual
+    public void init() { //
 
-    public void init() {
+        hookArmMotor = hardwareMap.dcMotor.get("hookArmMotor");
 
-        upperleftMotor = hardwareMap.dcMotor.get("Upper leftMotor");
-
-        upperleftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        upperleftMotor.setDirection(DcMotor.Direction.REVERSE);
-        upperleftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        hookArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        hookArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hookArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//setting our positions and letting the robot know how it can move
     }
 
-    public void loop() {
+    public void loop() { //
 
         if (gamepad1.a) {
             target = target + 200;
-            while (gamepad1.a){
-
+            while (gamepad1.a) {
+                if  (target > 2000) {
+                    target = 2000;
+                }
             }
         }
-        else if (gamepad1.b) {
+        else if (gamepad1.b) { //
             target = target - 200;
-            while (gamepad1.b){
-
+            while (gamepad1.b) {
+                if  (target < 0) {
+                    target = 0;
+                }
             }
         }
-
-        if (target < 0){
+        else if (gamepad1.x) {
             target = 0;
         }
-        else if (target > 1500){
-            target = 1500;
+        else if (gamepad1.y) {
+            target = 1800;
         }
 
-        //power = power * Math.min(Math.abs(upperleftMotor.getCurrentPosition()-target),200)/200;
+        hookArmMotor.setTargetPosition(target);
 
-        if (Math.abs(target - upperleftMotor.getCurrentPosition()) > 100) {
-            motorPower = power;
-        }
-        else {
-            motorPower = power * Math.pow(1 - Math.pow(Math.abs(target - upperleftMotor.getCurrentPosition()) - 100, 2) / Math.pow(100,2), 0.5));
+        if (hookArmMotor.getCurrentPosition()!=target) {
+            hookArmMotor.setPower(runPower);
         }
 
-        upperleftMotor.setTargetPosition(target);
+        while (hookArmMotor.isBusy()) { //
 
-        if (upperleftMotor.getCurrentPosition()!=target) {
-            upperleftMotor.setPower(motorPower);
-        }
-
-        while (upperleftMotor.isBusy()){
-
-        }
-        upperleftMotor.setPower(0);
-
-        /**
-        if (gamepad1.a) {
-            HookArmEncoderCode.Lift(upperleftMotor, power, 0);
-            while (gamepad1.a){
-
+            if (gamepad1.a) {
+                target = target + 200;
+                while (gamepad1.a) {
+                    if  (target > 2000) {
+                        target = 2000;
+                    }
+                }
             }
-        }
-        else if (gamepad1.b) {
-            HookArmEncoderCode.Lift(upperleftMotor, power, 150);
-            while (gamepad1.b){
-
+            else if (gamepad1.b) {
+                target = target - 200;
+                while (gamepad1.b) {
+                    if  (target < 0) {
+                        target = 0;
+                    }
+                }
             }
-        }
-        else {
-            upperleftMotor.setPower(0);
-        }
+//letting it know it's positions and where it can go, so it does not slam into the motor.
+            hookArmMotor.setTargetPosition(target);
 
-        **/
+            diff = Math.abs(hookArmMotor.getCurrentPosition() - target);
 
-        /**
-        double power = 0.3;
+            if (diff > 400) {
+                runPower = power;
+            }
+            else {
+                runPower = power * Math.pow(1 - Math.pow(diff/400,2),1/2);
+            }
 
-        if (gamepad1.a){
-            upperleftMotor.setPower(power);
-        }
-        else if (gamepad1.b){
-            upperleftMotor.setPower(-1 * power);
-        }
-        else{
-            upperleftMotor.setPower(0);
-        }
+            hookArmMotor.setPower(runPower);
+// decreasing power in certain situations.
 
         }
 
-        //upperleftMotor.setPower(gamepad1.left_stick_y);
+        hookArmMotor.setPower(0);
 
-        //telemetry.addData("Left_stick_x:", gamepad1.left_stick_x);
-
-        **/
+// letting the robot know to stop the code when the power is 0.
 
     }
 
 }
-
